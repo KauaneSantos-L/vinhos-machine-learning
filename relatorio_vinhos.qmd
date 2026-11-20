@@ -1,0 +1,114 @@
+---
+title: "Avaliação da qualidade de vinhos tintos com o uso de Machine Learning"
+author: "Kauane dos Santos Leite"
+format: pdf
+editor: visual
+project:
+  output-dir: .
+---
+
+## 1. Introdução
+
+A qualidade dos vinhos é um aspecto relevante para a indústria vitivinícola, podendo estar ligada a diversas propriedades da bebida. A análise dessas características possibilita a investigação de possíveis conexões entre a composição do vinho e seu aspecto qualitativo. Nesse cenário, métodos de análises e aprendizado de máquina podem ajudar a reconhecer padrões nos dados e a criar modelos que classificam essa bebida com base em suas características.
+
+O objetivo deste estudo é examinar um conjunto de dados sobre vinhos tintos, a fim de descobrir padrões entre suas propriedades físico-químicas e a classificação de qualidade. Para isso, conduziu-se uma análise exploratória e implementaram-se dois métodos de aprendizado de máquina: Árvore de Decisão (*Decision Tree*) e Floresta Aleatória (*Random Forest*). Ademais, para criar e comparar modelos de classificação, os vinhos foram divididos em duas categorias: Baixa e Média/Alta qualidade, para evitar o desbalanceamento dos dados.
+
+## 2. Fundamentos Teóricos e Metodológicos
+
+A Análise Exploratória de Dados (AED) é um conjunto de métodos empregados para entender as propriedades de um banco de dados, reconhecer padrões, identificar possíveis inconsistências e examinar as relações entre variáveis. Nesta fase, foram realizadas medidas estatísticas descritivas e ferramentas gráficas, como gráficos de barras, *boxplots* e matrizes de correlação (quanto mais próximo de 1, as variáveis são diretamente proporcionais, e quanto mais próximo de -1 as variáveis são inversamente proporcionais), o que possibilita uma compreensão preliminar dos dados antes da implementação dos modelos.
+
+O *Machine Learning*, também conhecido como aprendizado de máquina, é um campo da inteligência artificial que cria algoritmos capazes de reconhecer padrões e fazer previsões ou classificações. Uma de suas abordagens mais notáveis é o aprendizado supervisionado, em que os modelos são treinados com dados cujos resultados já são conhecidos. Isso permite que eles aprendam a relação entre as variáveis de entrada e a variável a ser prevista. Neste estudo, empregou-se a classificação supervisionada, pois o propósito é categorizar os vinhos em grupos de qualidade com base em suas propriedades físico-químicas.
+
+A Árvore de Decisão é um método de aprendizado supervisionado empregado em atividades de classificação e regressão. Seu funcionamento se baseia em uma estrutura parecida com uma árvore, na qual as informações são agrupadas com base em condições definidas sobre as variáveis. Cada ramificação procura dividir as observações com base em suas particularidades, levando a uma conclusão final simbolizada pelas folhas da árvore. Em problemas de classificação, como o que foi escolhido, essas folhas mostram a classe que o modelo prevê. Uma das principais vantagens desse método é sua simplicidade na interpretação, uma vez que possibilita a visualização dos critérios empregados para efetuar as classificações.
+
+A Floresta Aleatória é também um método supervisionado que emprega um conjunto de árvores de decisão para efetuar classificações ou previsões. O seu funcionamento envolve a criação de várias árvores, que são treinadas com diferentes amostras dos dados e subconjuntos de variáveis. No processo de classificação, cada árvore faz uma previsão e o resultado final é definido pela votação entre elas. Essa combinação tende a tornar o modelo mais resistente e diminuir a dependência de uma única árvore, o que contribui para um desempenho superior em diversos conjuntos.
+
+Avaliar modelos de classificação é fundamental para medir a precisão de suas previsões. Neste trabalho, foram adotadas diversas métricas, entre as quais destaca-se a Acurácia (*Accuracy*), Acurácia Balanceada (*Balanced Accuracy*), *Recall*, *Precision*, *F1-score* e Coeficiente Kappa de Cohen:
+
+- **Acurácia:** proporção de previsões corretas em relação ao total de amostras;
+
+- **Acurácia balanceada:** média das taxas de acerto por classe, ideal para bases desbalanceadas;
+
+- ***Recall***: capacidade de identificar positivos reais;
+
+- ***Precision***: confiabilidade das previsões positivas;
+
+- ***F1-score*****:** equilibra *precision* e *recall*;
+
+- **Coeficiente Kappa de Cohen:** concordância entre previsões e valores reais descontando o acaso.
+
+## 3. Aplicação
+
+### 3.1. Descrição do banco de dados
+
+Utilizou-se o conjunto de dados *Wine Quality*, disponível no repositório da Universidade da Califórnia em Irvine (UCI). A base de vinhos tintos conta com 1.599 observações e 12 variáveis:
+
+- **11 variáveis físico-químicas:** incluem acidez fixa, acidez volátil, ácido cítrico, açúcar residual, cloretos, dióxido de enxofre livre, dióxido de enxofre total, densidade, pH, sulfatos e teor alcoólico.
+
+- **1 variável de qualidade:** expressa por notas numéricas que variam de 3 a 8 nesta base.
+
+Inicialmente, verificou-se a integridade dos dados quanto à presença de valores ausentes e duplicidades. Embora não tenham sido encontrados dados faltantes, identificaram-se 240 registros duplicados e combinações repetidas de variáveis físico-químicas. Como essas ocorrências não apresentaram divergências na variável de qualidade, todos os registros foram mantidos na base para evitar exclusões sem justificativa metodológica.
+
+### 3.2. Análise exploratória dos dados
+
+#### 3.2.1. Distribuição da qualidade dos vinhos
+
+Foi analisada a distribuição das notas de qualidade (que variam de 3 a 8), constatando forte concentração nas avaliações 5 e 6, com 681 (42,59%) e 638 (39,90%) registros, respectivamente. Por outro lado, as notas extremas apresentaram baixa representatividade, contabilizando apenas 10 amostras na classe 3 e 18 na classe 8. Tal padrão evidencia o desbalanceamento da base, com claro predomínio das categorias intermediárias.
+
+![Distribuição das notas de qualidade dos vinhos tintos](C:/Users/natal/OneDrive/Documentos/Relatorio.vinhos/distribuicao_qualidade.png){#fig-distribuicao fig-cap="Distribuição das notas de qualidade dos vinhos tintos" width="351"}
+
+Fonte: Elaborado pela autora (2026).
+
+#### 3.2.2. Correlação entre as características físico-químicas e a qualidade
+
+Também se avaliou a correlação entre as variáveis físico-químicas e a qualidade do vinho para identificar as associações mais relevantes. O teor alcoólico destacou-se com correlação positiva de cerca de 0.48, seguido pelos sulfatos, com correlação positiva próxima de 0.25; já a acidez volátil apresentou correlação negativa em torno de -0.39. Na base analisada, portanto, maiores valores de teor alcoólico e sulfatos tendem a coincidir com notas mais altas, enquanto maior acidez volátil tende a coincidir com notas mais baixas — lembrando que correlação não implica causalidade.
+
+![Matriz de correlação entre as variáveis físico-químicas e a qualidade dos vinhos](C:/Users/natal/OneDrive/Documentos/Relatorio.vinhos/matriz_correlacao.png){#fig-correlacao fig-cap="Matriz de correlação entre as variáveis físico-químicas e a qualidade dos vinhos" width="472"}
+
+Fonte: Elaborado pela autora (2026).
+
+#### 3.2.3. Identificação de valores discrepantes (outliers)
+
+Foi investigada a presença de valores discrepantes (*outliers*) por meio do intervalo interquartil (IQR) e de diagramas de caixa (*boxplots*). Apesar de terem sido detectadas observações fora dos limites em algumas variáveis físico-químicas, optou-se por mantê-las na base, uma vez que podem expressar características legítimas dos vinhos analisados, evitando assim a perda de dados úteis ao treinamento dos modelos.
+
+### 3.3. Aplicação dos métodos de Machine Learning
+
+Para a modelagem, a variável de qualidade foi reagrupada em duas classes: *Baixa qualidade* (notas 3, 4 e 5) e *Média/Alta qualidade* (notas 6, 7 e 8). Após essa binarização, a distribuição resultou em 744 observações na primeira categoria (46,53%) e 855 na segunda (53,47%), reduzindo o desbalanceamento observado nas notas originais.
+
+Na etapa seguinte, o conjunto foi particionado em subconjuntos de treino e teste, com 1.281 e 318 amostras, respectivamente. A separação empregou a validação estratificada por grupos (*StratifiedGroupKFold*), de modo a manter o equilíbrio entre as classes e impedir o vazamento de dados por meio do compartilhamento de registros com atributos físico-químicos idênticos entre treino e teste.
+
+Aplicou-se inicialmente a Árvore de Decisão (`DecisionTreeClassifier`), configurando `class_weight='balanced'` para levar em conta a frequência das classes no treinamento. Sobre os dados de teste, o modelo alcançou acurácia de 70,75%, acurácia balanceada de 70,34%, *F1-score* macro de 70,40% e coeficiente Kappa de Cohen de 0,4081. Os resultados apontam bom acerto geral e equilíbrio razoável entre as categorias de qualidade.
+
+O segundo modelo avaliado foi a Floresta Aleatória, implementado por meio da classe `RandomForestClassifier`. O algoritmo foi configurado com 100 árvores de decisão e profundidade máxima de três níveis (`max_depth=3`), mantendo-se o parâmetro `class_weight='balanced'` para ponderar a distribuição das classes durante o treinamento. Nos dados de teste, o classificador alcançou acurácia de 77,04%, acurácia balanceada de 77,59%, *F1-score* macro de 77,04% e coeficiente Kappa de Cohen de 0,5436. Esses resultados superam a Árvore de Decisão individual em todos os critérios avaliados, evidenciando maior capacidade preditiva e melhor poder de generalização para o problema proposto.
+
+**Tabela 1 – Comparação do desempenho dos modelos**
+
+|                     |                       |                        |
+|---------------------|-----------------------|------------------------|
+| **Métrica**         | **Árvore de decisão** | **Floresta Aleatória** |
+| Acurácia            | 70.75%                | 77.04%                 |
+| Acurácia balanceada | 70.34%                | 77.59%                 |
+| F1-score macro      | 70.40%                | 77.04%                 |
+| Kappa de Cohen      | 0.4081                | 0.5436                 |
+
+Na comparação direta, a Floresta Aleatória apresentou desempenho superior à Árvore de Decisão em todas as métricas analisadas: a acurácia subiu de 70,75% para 77,04%, acompanhada de avanços na acurácia balanceada, no *F1-score* macro e no coeficiente Kappa de Cohen. Os resultados mostram que a combinação de múltiplas árvores gerou classificações mais consistentes para esta base de dados, destacando a Floresta Aleatória como a melhor alternativa entre os dois modelos avaliados.
+
+Por meio das matrizes de confusão, é possível examinar o volume de acertos e erros dos modelos por classe. A Árvore de Decisão classificou corretamente 95 observações de *Baixa qualidade* e 130 de *Média/Alta qualidade*, enquanto a Floresta Aleatória acertou 120 amostras de *Baixa qualidade* e 125 de *Média/Alta qualidade*. Verifica-se que a Floresta Aleatória teve desempenho expressivamente superior na identificação da classe *Baixa qualidade*, compensando a leve vantagem da Árvore de Decisão na classe *Média/Alta qualidade* e explicando seu melhor equilíbrio entre as categorias.
+
+A análise de importância das variáveis na Floresta Aleatória apontou o teor alcoólico como o atributo de maior contribuição para o modelo (0,3735), seguido pelos sulfatos (0,1617), acidez volátil (0,1600), densidade (0,0984) e dióxido de enxofre total (0,0870). Esse resultado corrobora a correlação positiva observada na etapa exploratória, embora reflita apenas o peso preditivo dos atributos no algoritmo, sem implicar causalidade.
+
+## 4. Conclusão
+
+Este estudo teve como propósito investigar a qualidade das bebidas com base em suas propriedades físico-químicas, combinando análise exploratória de dados e algoritmos de aprendizado de máquina (*Machine Learning*). Na etapa exploratória, evidenciou-se a forte concentração das avaliações nas notas intermediárias 5 e 6, bem como a maior associação da qualidade com o teor alcoólico, os sulfatos e a acidez volátil.
+
+Na fase de modelagem preditiva, avaliaram-se os classificadores Árvore de Decisão e Floresta Aleatória sobre duas categorias agrupadas de qualidade (*Baixa* e *Média/Alta*). Os experimentos demonstraram a superioridade da Floresta Aleatória em todas as métricas analisadas, alcançando 77,04% de acurácia frente aos 70,75% obtidos pela Árvore de Decisão. Adicionalmente, a análise de importância dos atributos confirmou o teor alcoólico como o principal fator discriminante nas decisões da Floresta Aleatória.
+
+Os resultados confirmam a viabilidade das técnicas aplicadas para identificar padrões e classificar os vinhos com base em sua composição físico-química, ressalvando-se que as conclusões se restringem à amostra e aos parâmetros avaliados e não implicam relação de causalidade.
+
+## 5. Referências
+
+CORTEZ, P.; CERDEIRA, A.; ALMEIDA, F.; MATOS, T.; REIS, J. **Modeling wine preferences by data mining from physicochemical properties**. *Decision Support Systems*, v. 47, n. 4, p. 547–553, 2009. DOI: <https://doi.org/10.1016/j.dss.2009.05.016>.
+
+CORTEZ, P. et al. **Wine Quality**. UCI Machine Learning Repository, 2009. Disponível em: <https://doi.org/10.24432/C56S3T>. Acesso em: 20 nov. 2026.
+
+PEDREGOSA, F. et al. **Scikit-learn: Machine Learning in Python**. *Journal of Machine Learning Research*, v. 12, p. 2825–2830, 2011.
